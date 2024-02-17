@@ -1551,7 +1551,7 @@ public abstract class DataStore
                 BoundaryVisualization.visualizeClaim(player, result.claim, VisualizationType.CONFLICT_ZONE);
 
                 //log conflicting claim, if debug logs are enabled
-                GriefPrevention.AddLogEntry(String.valueOf(result.claim.id), CustomLogEntryTypes.Debug);
+                GriefPrevention.AddLogEntry(player.getName() + " attempted to create a claim, but conflicted with claim " + result.claim.id, CustomLogEntryTypes.Debug);
             }
             else
             {
