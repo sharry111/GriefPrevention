@@ -1364,14 +1364,27 @@ class PlayerEventHandler implements Listener
         // Name tags may only be used on entities that the player is allowed to kill.
         if (itemInHand.getType() == Material.NAME_TAG)
         {
-            EntityDamageByEntityEvent damageEvent = new EntityDamageByEntityEvent(player, entity, EntityDamageEvent.DamageCause.CUSTOM, 0);
-            instance.entityDamageHandler.onEntityDamage(damageEvent);
-            if (damageEvent.isCancelled())
-            {
-                event.setCancelled(true);
-                // Don't print message - damage event handler should have handled it.
-                return;
-            }
+            Claim cachedClaim = playerData.lastClaim;;
+            Claim claim = this.dataStore.getClaimAt(entity.getLocation(), false, cachedClaim);
+
+            // Require a claim to handle.
+            if (claim == null) return;
+
+            Supplier<String> override = () ->
+                {
+                    String message = dataStore.getMessage(Messages.NoDamageClaimedEntity, claim.getOwnerName());
+                    if (player.hasPermission("griefprevention.ignoreclaims"))
+                        message += "  " + dataStore.getMessage(Messages.IgnoreClaimsAdvertisement);
+                    return message;
+                };
+
+            // Check for permission to access containers.
+            Supplier<String> noContainersReason = claim.checkPermission(player, ClaimPermission.Inventory, event, override);
+
+            // If player has permission, action is allowed.
+            if (noContainersReason == null) return;
+            event.setCancelled(true);
+            GriefPrevention.sendMessage(player, TextMode.Err, noContainersReason.get());
         }
     }
 
@@ -2149,7 +2162,15 @@ class PlayerEventHandler implements Listener
                 }
                 else
                 {
-                    allowedFillBlocks.add(Material.GRASS);
+
+                    // in Minecraft 1.20.3 GRASS was renamed to SHORT_GRASS
+                    // This will support both before/after the change
+                    try{
+                        allowedFillBlocks.add(Material.valueOf("GRASS"));
+                    } catch(IllegalArgumentException e){
+                        allowedFillBlocks.add(Material.valueOf("SHORT_GRASS"));
+                    }
+
                     allowedFillBlocks.add(Material.DIRT);
                     allowedFillBlocks.add(Material.STONE);
                     allowedFillBlocks.add(Material.SAND);
@@ -2212,8 +2233,17 @@ class PlayerEventHandler implements Listener
                                 break;
                             }
 
+                            // in Minecraft 1.20.3 GRASS was renamed to SHORT_GRASS
+                            // This will support both before/after the change
+                            Material grassMaterial;
+                            try{
+                                grassMaterial = Material.valueOf("GRASS");
+                            } catch(IllegalArgumentException e){
+                                grassMaterial = Material.valueOf("SHORT_GRASS");
+                            }
+
                             //only replace air, spilling water, snow, long grass
-                            if (block.getType() == Material.AIR || block.getType() == Material.SNOW || (block.getType() == Material.WATER && ((Levelled) block.getBlockData()).getLevel() != 0) || block.getType() == Material.GRASS)
+                            if (block.getType() == Material.AIR || block.getType() == Material.SNOW || (block.getType() == Material.WATER && ((Levelled) block.getBlockData()).getLevel() != 0) || block.getType() == grassMaterial)
                             {
                                 //if the top level, always use the default filler picked above
                                 if (y == maxHeight)
