@@ -107,6 +107,18 @@ public class MetricsHandler
 
         //siege
         addSimplePie("uses_siege", !plugin.config_siege_enabledWorlds.isEmpty());
+
+        // Which claims modes are actually used?
+        addSimplePie(
+                "uses_claims_survival",
+                () -> String.valueOf(plugin.config_claims_worldModes.values().stream().anyMatch(mode -> mode == ClaimsMode.Survival)));
+        addSimplePie(
+                "uses_claims_survival_req_claim",
+                () -> String.valueOf(plugin.config_claims_worldModes.values().stream().anyMatch(mode -> mode == ClaimsMode.SurvivalRequiringClaims)));
+        addSimplePie(
+                "uses_claims_creative",
+                () -> String.valueOf(plugin.config_claims_worldModes.values().stream().anyMatch(mode -> mode == ClaimsMode.Creative)));
+
     }
 
     private void addSimplePie(String id, boolean value)
@@ -116,13 +128,18 @@ public class MetricsHandler
 
     private void addSimplePie(String id, String value)
     {
-        metrics.addCustomChart(new Metrics.SimplePie(id, new Callable<String>()
+        addSimplePie(id, new Callable<String>()
         {
             @Override
             public String call() throws Exception
             {
                 return value;
             }
-        }));
+        });
+    }
+
+    private void addSimplePie(String id, Callable<String> callable)
+    {
+        metrics.addCustomChart(new Metrics.SimplePie(id, callable));
     }
 }
