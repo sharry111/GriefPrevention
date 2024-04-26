@@ -55,6 +55,13 @@ public class MetricsHandler
             addSimplePie("use_ban_command", plugin.config_ban_useCommand);
         }
 
+        //global protections
+        addSimplePie("endermen_move_blocks", plugin.config_endermenMoveBlocks);
+        addSimplePie("silverfish_break_blocks", plugin.config_silverfishBreakBlocks);
+        addSimplePie("rabbits_eat_crops", plugin.config_rabbitsEatCrops);
+        addSimplePie("zombies_break_doors", plugin.config_zombiesBreakDoors);
+        addSimplePie("mob_projectiles_change_blocks", plugin.config_mobProjectilesChangeBlocks);
+
         //Used for claims?
         boolean claimsEnabled = false;
         for (ClaimsMode mode : plugin.config_claims_worldModes.values())
@@ -84,17 +91,24 @@ public class MetricsHandler
         addSimplePie("protect_horses", plugin.config_claims_protectHorses);
         addSimplePie("protect_donkeys", plugin.config_claims_protectDonkeys);
         addSimplePie("protect_llamas", plugin.config_claims_protectLlamas);
+        addSimplePie("protect_creatures", plugin.config_claims_protectCreatures);
 
         addSimplePie("prevent_buttons_switches", plugin.config_claims_preventButtonsSwitches);
+        addSimplePie("prevent_theft", plugin.config_claims_preventTheft);
+        addSimplePie("ender_pearls_require_accesstrust", plugin.config_claims_enderPearlsRequireAccessTrust);
+        addSimplePie("raid_triggers_require_buildtrust", plugin.config_claims_raidTriggersRequireBuildTrust);
         addSimplePie("villager_trading_requires_trust", plugin.config_claims_villagerTradingRequiresTrust);
+        addSimplePie("lectern_reading_requires_accesstrust", plugin.config_claims_lecternReadingRequiresAccessTrust);
 
         //CPU-intensive options
         addSimplePie("survival_nature_restoration", plugin.config_claims_survivalAutoNatureRestoration);
+        addSimplePie("prevent_portals", plugin.config_claims_preventNonPlayerCreatedPortals);
         addSimplePie("block_sky_trees", plugin.config_blockSkyTrees);
         addSimplePie("limit_tree_growth", plugin.config_limitTreeGrowth);
 
         addSimplePie("pistons_only_work_in_claims", plugin.config_pistonMovement.name().toLowerCase().replace('_', ' '));
         addSimplePie("creatures_trample_crops", plugin.config_creaturesTrampleCrops);
+        addSimplePie("ravagers_break_blocks", plugin.config_claims_ravagersBreakBlocks);
 
         addSimplePie("claim_tool", plugin.config_claims_modificationTool.name());
         addSimplePie("claim_inspect_tool", plugin.config_claims_investigationTool.name());
@@ -118,6 +132,10 @@ public class MetricsHandler
         addSimplePie(
                 "uses_claims_creative",
                 () -> String.valueOf(plugin.config_claims_worldModes.values().stream().anyMatch(mode -> mode == ClaimsMode.Creative)));
+
+        addSimplePie("supply_player_manual", plugin.config_claims_supplyPlayerManual);
+        addSimplePie("manual_delivery_delay", String.valueOf(plugin.config_claims_manualDeliveryDelaySeconds));
+        addSimplePie("uses_claimblock_economy", plugin.config_economy_claimBlocksPurchaseCost != 0D || plugin.config_economy_claimBlocksSellValue != 0D);
 
     }
 
