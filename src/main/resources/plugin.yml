@@ -284,6 +284,7 @@ permissions:
         description: Players with this permission can't be ignored.
         default: op
     griefprevention.seeinactivity:
+    folia-supported: true
         description: Players with this permission can see how long a claim owner has been offline.
         default: op
     griefprevention.eavesdropimmune:
