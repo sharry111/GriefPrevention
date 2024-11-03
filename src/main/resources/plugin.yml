@@ -292,3 +292,4 @@ permissions:
     griefprevention.premovementchat:
         description: Players with this permission can chat before moving.
         default: false
+        folia-supported: true
